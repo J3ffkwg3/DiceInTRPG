@@ -10,7 +10,9 @@ const extract = text => {
   const spl2 = spl[1].split("+");
   const crit = Number(spl2[0]);
   const fixed = Number(spl2[1]);
-  return [quan, crit, fixed];
+  const result = [quan, crit, fixed];
+  //console.log(result);
+  return result;
 };
 
 const achievement = (quan, crit, fixed, count) => {
@@ -26,16 +28,25 @@ const achievement = (quan, crit, fixed, count) => {
       readyNext = true;
     }
   }
+  console.log(rollArray);
   if (readyNext) {
     const countNow = count + 1;
     const result = achievement(nextDice, crit, fixed, countNow);
-    console.log(result);
+    //console.log(result);
     return result;
   } else {
     const rollMax = Math.max.apply(null, rollArray);
     const result = sumNow + rollMax + fixed;
-    console.log(result);
+    //console.log(result);
     return result;
+  }
+};
+
+const showDown = (achievement, oppositeAchievement) => {
+  if (achievement > oppositeAchievement) {
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -45,24 +56,43 @@ const arraySum = array => {
   return sum;
 };
 
-const damage = num => {
-  const dice = Math.floor(num / 10);
+const damage = (achievement, fixed) => {
+  const dice = Math.floor(achievement / 10);
   const damArray = [];
   for (let i = 0; i < dice; i++) {
-    const dam = rollTen();
+    const dam = rollTen() + fixed;
     damArray.push(dam);
   }
-  console.log(damArray);
+  //console.log(damArray);
   const damageSum = arraySum(damArray);
-  console.log(damageSum);
+  //console.log(damageSum);
   return damageSum;
+};
+
+const reaction = () => {
+  return "guard";
 };
 
 const attack = () => {
   const ext = extract(test);
-  const arc = achievement(ext[0], ext[1], ext[2], 0);
-  const dam = damage(arc);
-  console.log(dam);
+  const ach = achievement(ext[0], ext[1], ext[2], 0);
+  const fixed = 12;
+  const dam = damage(ach, fixed);
+  const guard = 3;
+  const react = reaction();
+  if (react == "guard") {
+    const finalDam = Math.max(0, dam - guard);
+    console.log(finalDam);
+  } else if (react == "avoid") {
+    const opoAch = achievement(2, 10, 4, 0);
+    if (showDown(ach, opoAch)) {
+      console.log(dam);
+    } else {
+      console.log(0);
+    }
+  } else {
+    console.log(dam);
+  }
 };
 
 attack();
